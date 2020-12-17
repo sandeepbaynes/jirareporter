@@ -27,41 +27,33 @@
         added to the sprint tickets list)
       </span>
     </div>
+    <span class="text-6 text-h6"><b>Sprint completion %</b> </span>
+    <v-container>
+      <v-row align="center" no-gutters>
+        <v-card
+          v-for="(sprint, index) in sprintsdata"
+          :key="sprint.name"
+          elevation="2"
+          class="completionchart ma-3"
+          cols="12"
+          md="4"
+          lg="3"
+        >
+          <div id="chart">
+            <v-card-title>{{ sprint.name }}</v-card-title>
+            <ApexCharts
+              type="radialBar"
+              height="350"
+              :options="completionchartoptiosnandseries[index].options"
+              :series="completionchartoptiosnandseries[index].series"
+            ></ApexCharts>
+          </div>
+        </v-card>
+      </v-row>
+    </v-container>
     <span class="text-1 text-subtitle-1"
-      ><b>Estimation variance</b> - For all tickets closed in sprint</span
-    >
-    <div class="sprintcompletion">
-      <div class="completionchart" cols="12" md="4" lg="3">
-        <div id="chart">
-          <ApexCharts
-            type="radialBar"
-            height="350"
-            :options="completionchartoptions"
-            :series="completionchartseries"
-          ></ApexCharts>
-        </div>
-      </div>
-      <div class="completionchart" cols="12" md="4" lg="3">
-        <div id="chart">
-          <ApexCharts
-            type="radialBar"
-            height="350"
-            :options="completionchartoptions"
-            :series="completionchartseries"
-          ></ApexCharts>
-        </div>
-      </div>
-      <div class="completionchart" cols="12" md="4" lg="3">
-        <div id="chart">
-          <ApexCharts
-            type="radialBar"
-            height="350"
-            :options="completionchartoptions"
-            :series="completionchartseries"
-          ></ApexCharts>
-        </div>
-      </div>
-    </div>
+      ><b>Estimation variance</b> - For all tickets closed in sprint
+    </span>
     <div id="estimatevariancechart">
       <ApexCharts
         ref="estimatevariancechart"
@@ -160,6 +152,20 @@ var getcountandpoints = function (tickets) {
     };
   }
 };
+
+var gettotalandcompletedpoints = function (tickets) {
+  var totalclosed = getcountandpoints(
+    tickets.filter(function (issue) {
+      return issue.statusatendofsprint.value == "Closed";
+    })
+  );
+  var total = getcountandpoints(tickets);
+  return {
+    total: total.storypointsatendofsprint,
+    totalclosed: totalclosed.storypointsatendofsprint,
+  };
+};
+
 var getticketidsfromlist = function (tickets) {
   return tickets
     .map(function (ticket) {
@@ -273,6 +279,30 @@ var filterdefectscreatedinsprint = function (sprint) {
       (issuecreatedate <= enddate || issuecreatedate <= completedate)
     );
   });
+};
+
+var filterstoriesinsprint = function (sprint) {
+  return [...sprint.tickets, ...sprint.ticketsaddedaftersprintstart].filter(
+    function (issue) {
+      return issue.issuetype == "Story" || issue.issuetype == "Change Request";
+    }
+  );
+};
+
+var filterbugsinsprint = function (sprint) {
+  return [...sprint.tickets, ...sprint.ticketsaddedaftersprintstart].filter(
+    function (issue) {
+      return issue.issuetype == "Bug";
+    }
+  );
+};
+
+var filtertasksinsprint = function (sprint) {
+  return [...sprint.tickets, ...sprint.ticketsaddedaftersprintstart].filter(
+    function (issue) {
+      return issue.issuetype == "Task";
+    }
+  );
 };
 
 var formatsprintdata = function (sprint) {
@@ -485,6 +515,28 @@ var getdefaultchartoptions = function () {
   };
 };
 
+var getdefaultradialchartoptions = function (formatter) {
+  return {
+    chart: {
+      height: 350,
+      type: "radialBar",
+    },
+    plotOptions: {
+      radialBar: {
+        dataLabels: {
+          total: {
+            show: true,
+            label: "Completion %",
+            formatter: function (w) {
+              return w.config.series[0];
+            },
+          },
+        },
+      },
+    },
+  };
+};
+
 export default {
   components: {
     ApexCharts: VueApexCharts,
@@ -619,7 +671,7 @@ export default {
         {
           name: "Closed in Sprint",
           type: "line",
-          color: "#0d2f16",
+          color: "#0B2A44",
           data: completed,
         },
         {
@@ -645,7 +697,7 @@ export default {
     statuschartoptions() {
       var options = getdefaultchartoptions.call(this);
       options.stroke.colors = [
-        "#2b9447",
+        "#0B2A44",
         "transparent",
         "transparent",
         "transparent",
@@ -738,45 +790,64 @@ export default {
       }
       return [{ name: "Estimation Variance", data }];
     },
-    estimatevariancechartoptions() {
+    estimatevariancechartoptions(index) {
       var options = getdefaultchartoptions.call(this);
       options.chart.stacked = false;
       options.dataLabels.enabled = false;
       return options;
     },
-    completionchartoptions() {
-      return {
-        chart: {
-          height: 350,
-          type: "radialBar",
-        },
-        plotOptions: {
-          radialBar: {
-            track: { background: ["#40a0fc", "#1aa783", "#e65252"] },
-            
-            dataLabels: {
-              name: {
-                fontSize: "22px",
-              },
-              value: {
-                fontSize: "16px",
-              },
-              total: {
-                show: true,
-                label: "Total",
-                formatter: function (w) {
-                  // By default this function returns the average of all series. The below is just an example to show the use of custom formatter function
-                  return 249;
-                },
-              },
-            },
-          },
-        },
-        labels: ["Tasks", "Stories / CR", "Bugs"],
-      };
-    },
-    completionchartseries() {
-      return [44, 55, 67];
+    completionchartoptiosnandseries() {
+      return this.sprintsdata.map(function (sprint) {
+        var retoption = getdefaultradialchartoptions();
+        retoption.labels = [];
+        retoption.colors = [];
+        var tasksstatus = gettotalandcompletedpoints(
+          filtertasksinsprint(sprint)
+        );
+        var defectstatus = gettotalandcompletedpoints(
+          filterbugsinsprint(sprint)
+        );
+        var storystatus = gettotalandcompletedpoints(
+          filterstoriesinsprint(sprint)
+        );
+        var retval = [];
+        retval.push(
+          (
+            ((tasksstatus.totalclosed +
+              defectstatus.totalclosed +
+              storystatus.totalclosed) *
+              100) /
+            (tasksstatus.total + defectstatus.total + storystatus.total)
+          ).toFixed(2)
+        );
+        retoption.labels.push("Summary");
+        retoption.colors.push("#0B2A44");
+        if (storystatus.total != 0) {
+          retval.push(
+            ((storystatus.totalclosed * 100) / storystatus.total).toFixed(2)
+          );
+          retoption.labels.push("Stories / CR");
+          retoption.colors.push("#34b47e");
+        }
+        if (defectstatus.total != 0) {
+          retval.push(
+            ((defectstatus.totalclosed * 100) / defectstatus.total).toFixed(2)
+          );
+          retoption.labels.push("Bugs");
+          retoption.colors.push("#ff5630");
+        }
+        if (tasksstatus.total != 0) {
+          retval.push(
+            ((tasksstatus.totalclosed * 100) / tasksstatus.total).toFixed(2)
+          );
+          retoption.labels.push("Tasks");
+          retoption.colors.push("#2683ff");
+        }
+        return {
+          options: retoption,
+          series: retval,
+        };
+      });
     },
   },
   mounted() {
