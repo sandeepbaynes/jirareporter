@@ -27,14 +27,20 @@
         added to the sprint tickets list)
       </span>
     </div>
-    <span class="text-6 text-h6"><b>Sprint completion %</b> </span>
+    <span class="text-6 text-h6"><b>Sprint completion</b></span>
+    <span class="text-2 text-subtitle-2">
+      % - Excluding stretch goals within each sprint</span
+    >
+    <div>
+      <p class="text-center">Legend:</p>
+    </div>
     <v-container>
-      <v-row align="center" no-gutters>
+      <v-row no-gutters>
         <v-card
           v-for="(sprint, index) in sprintsdata"
           :key="sprint.name"
-          elevation="2"
-          class="completionchart ma-3"
+          elevation="1"
+          class="completionchart my-3 ml-10"
           cols="12"
           md="4"
           lg="3"
@@ -156,7 +162,10 @@ var getcountandpoints = function (tickets) {
 var gettotalandcompletedpoints = function (tickets) {
   var totalclosed = getcountandpoints(
     tickets.filter(function (issue) {
-      return issue.statusatendofsprint.value == "Closed";
+      return (
+        issue.statusatendofsprint.value == "Closed" ||
+        issue.statusatendofsprint.value == "Cancelled"
+      );
     })
   );
   var total = getcountandpoints(tickets);
@@ -198,7 +207,6 @@ var filterticketsclosedinsprint = function (sprint) {
   ].filter(function (issue) {
     return (
       issue.statusatendofsprint.value == "Closed" ||
-      issue.statusatendofsprint.value == "Fixed" ||
       issue.statusatendofsprint.value == "Cancelled"
     );
   });
@@ -222,7 +230,8 @@ var filterticketsintesting = function (sprint) {
     function (issue) {
       return (
         issue.statusatendofsprint.value == "In testing" ||
-        issue.statusatendofsprint.value == "Ready for test"
+        issue.statusatendofsprint.value == "Ready for test" ||
+        issue.statusatendofsprint.value == "Fixed"
       );
     }
   );
@@ -284,7 +293,10 @@ var filterdefectscreatedinsprint = function (sprint) {
 var filterstoriesinsprint = function (sprint) {
   return [...sprint.tickets, ...sprint.ticketsaddedaftersprintstart].filter(
     function (issue) {
-      return issue.issuetype == "Story" || issue.issuetype == "Change Request";
+      return (
+        (issue.issuetype == "Story" || issue.issuetype == "Change Request") &&
+        !(issue.labels && issue.labels.indexOf("StretchGoal") >= 0)
+      );
     }
   );
 };
@@ -292,7 +304,10 @@ var filterstoriesinsprint = function (sprint) {
 var filterbugsinsprint = function (sprint) {
   return [...sprint.tickets, ...sprint.ticketsaddedaftersprintstart].filter(
     function (issue) {
-      return issue.issuetype == "Bug";
+      return (
+        issue.issuetype == "Bug" &&
+        !(issue.labels && issue.labels.indexOf("StretchGoal") >= 0)
+      );
     }
   );
 };
@@ -300,7 +315,10 @@ var filterbugsinsprint = function (sprint) {
 var filtertasksinsprint = function (sprint) {
   return [...sprint.tickets, ...sprint.ticketsaddedaftersprintstart].filter(
     function (issue) {
-      return issue.issuetype == "Task";
+      return (
+        issue.issuetype == "Task" &&
+        !(issue.labels && issue.labels.indexOf("StretchGoal") >= 0)
+      );
     }
   );
 };

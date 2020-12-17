@@ -274,7 +274,6 @@ export default {
       var color = "";
       switch (status) {
         case "Closed":
-        case "Fixed":
         case "Cancelled":
           color = "green darken-1";
           break;
@@ -284,6 +283,7 @@ export default {
         case "In code review":
         case "Awaiting Code Review":
         case "Reopened":
+        case "Fixed":
           color = "red";
           break;
         case "Open":
