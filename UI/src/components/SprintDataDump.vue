@@ -17,6 +17,7 @@
       <v-data-table
         :headers="tableheaders"
         :items="sprinttickets"
+        multi-sort
         class="elevation-0"
       >
         <template v-slot:item.ticketid="{ item }">
@@ -49,6 +50,7 @@
       <v-data-table
         :headers="tableheaders"
         :items="ticketsaftersprintstart"
+        multi-sort
         class="elevation-0"
       >
         <template v-slot:item.ticketid="{ item }">
@@ -81,6 +83,7 @@
       <v-data-table
         :headers="tableheaders"
         :items="stretchgoals"
+        multi-sort
         class="elevation-0"
       >
         <template v-slot:item.ticketid="{ item }">
@@ -113,6 +116,7 @@
       <v-data-table
         :headers="tableheaders"
         :items="ticketsremovedfromsprint"
+        multi-sort
         class="elevation-0"
       >
         <template v-slot:item.ticketid="{ item }">
@@ -145,6 +149,7 @@
       <v-data-table
         :headers="tableheaders"
         :items="ticketsnotworked"
+        multi-sort
         class="elevation-0"
       >
         <template v-slot:item.ticketid="{ item }">
@@ -177,6 +182,7 @@
       <v-data-table
         :headers="tableheaders"
         :items="ticketsreopened"
+        multi-sort
         class="elevation-0"
       >
         <template v-slot:item.ticketid="{ item }">
@@ -204,11 +210,12 @@
     </div>
     <div>
       <span class="text-1">
-        <b>Defects raised against sprint tickets</b>
+        <b>Defects raised in sprint</b>
       </span>
       <v-data-table
         :headers="tableheaders"
         :items="defectscreatedinsprint"
+        multi-sort
         class="elevation-0"
       >
         <template v-slot:item.ticketid="{ item }">
@@ -234,12 +241,23 @@
         </template>
       </v-data-table>
     </div>
+    <div>
+      <SprintTimeLogged
+        :sprintname="sprintname"
+        :sprintid="sprintid"
+        :loading="loading"
+      >
+      </SprintTimeLogged>
+    </div>
     <v-divider></v-divider>
     <v-divider></v-divider>
     <v-divider></v-divider>
   </div>
 </template>
+
 <script>
+import SprintTimeLogged from "@/components/SprintTimeLogged.vue";
+
 var getdatatablevalues = function (issues) {
   return issues.map(function (ticket) {
     return {
@@ -259,6 +277,10 @@ var getdatatablevalues = function (issues) {
 };
 
 export default {
+  name: "SprintDataDump",
+  components: {
+    SprintTimeLogged,
+  },
   props: {
     sprintname: null,
     sprintid: null,

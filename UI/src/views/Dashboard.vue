@@ -33,6 +33,19 @@
     </v-toolbar>
 
     <v-expansion-panels multiple>
+      <!-- <v-expansion-panel>
+        <v-expansion-panel-header>
+          <span class="text-5 text-h5">Sprint Status History</span>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content v-if="anysprintsselected">
+          <SprintsStatusHistory
+            :loading="loadingsprintdata"
+          ></SprintsStatusHistory>
+        </v-expansion-panel-content>
+        <v-expansion-panel-content v-else>
+          Please select at least one sprint then refresh
+        </v-expansion-panel-content>
+      </v-expansion-panel> -->
       <v-expansion-panel>
         <v-expansion-panel-header>
           <span class="text-5 text-h5">Sprint Data Comparison</span>
@@ -82,6 +95,7 @@
 // @ is an alias to /src
 import SprintDataDump from "@/components/SprintDataDump.vue";
 import SprintsDataComparison from "@/components/SprintsDataComparison.vue";
+import SprintsStatusHistory from "@/components/SprintsStatusHistory.vue";
 
 var updateselectedsprints = function () {
   var selectedsprints = this.$route.query.selectedsprints;
@@ -117,6 +131,7 @@ export default {
   components: {
     SprintDataDump,
     SprintsDataComparison,
+    SprintsStatusHistory,
   },
   data: () => ({
     chipsprintselection: [],

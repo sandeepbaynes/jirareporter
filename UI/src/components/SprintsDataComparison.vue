@@ -31,9 +31,6 @@
     <span class="text-2 text-subtitle-2">
       % - Excluding stretch goals within each sprint</span
     >
-    <div>
-      <p class="text-center">Legend:</p>
-    </div>
     <v-container>
       <v-row no-gutters>
         <v-card

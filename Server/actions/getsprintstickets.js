@@ -65,11 +65,27 @@ var filterticketsfields = function (issues, sprint) {
             storypointsatendofsprint: null,
             jobcode: issue.fields.customfield_10130,
             statushistory: [],
+            timespent: {}
         }
+        var historyassignee = '';
+        var assigneeatstartofsprint = null, assigneeatendofsprint = null;
         for (var history of issue.changelog.histories) {
             var createdate = new Date(history.created);
             for (var item of history.items) {
                 switch (item.field) {
+                    case "assignee":
+                        historyassignee = item['toString'];
+                        if (createdate <= startdate && createdate <= activateddate) {
+                            assigneeatstartofsprint = { value: "assignee", changedate: createdate, author: history.author.name, authordisplayname: history.author.displayName };
+                        }
+                        else if (createdate <= enddate || createdate <= completedate) {
+                            if (!assigneeatstartofsprint) {
+                                assigneeatstartofsprint = { value: "assignee", changedate: new Date(issue.fields.created), author: issue.fields.creator.name, authordisplayname: issue.fields.creator.displayName };
+                            }
+                            assigneeatendofsprint = assigneeatstartofsprint = { value: "assignee", changedate: createdate, author: history.author.name, authordisplayname: history.author.displayName, assigneeattime: historyassignee };
+                            retval.statushistory.push(assigneeatendofsprint);
+                        }
+                        break;
                     case "status":
                         if (createdate <= startdate && createdate <= activateddate) {
                             retval.statusatstartofsprint = { value: item['toString'], changedate: createdate, author: history.author.name, authordisplayname: history.author.displayName };
@@ -78,7 +94,7 @@ var filterticketsfields = function (issues, sprint) {
                             if (!retval.statusatstartofsprint) {
                                 retval.statusatstartofsprint = { value: item['fromString'], changedate: new Date(issue.fields.created), author: issue.fields.creator.name, authordisplayname: issue.fields.creator.displayName };
                             }
-                            retval.statusatendofsprint = statusatstartofsrpint = { value: item['toString'], changedate: createdate, author: history.author.name, authordisplayname: history.author.displayName };
+                            retval.statusatendofsprint = statusatstartofsrpint = { value: item['toString'], changedate: createdate, author: history.author.name, authordisplayname: history.author.displayName, assigneeattime: historyassignee };
                             retval.statushistory.push(retval.statusatendofsprint);
                         }
                         break;
@@ -97,6 +113,21 @@ var filterticketsfields = function (issues, sprint) {
                         if (createdate <= enddate || createdate <= completedate) {
                             retval.labels = !item['toString'] ? [] : item['toString'].split(' ');
                         }
+                        break;
+                    case "timespent":   //This is supposed to come from issue.fields.worklog.worklogs[]. But Jira Rest API has an issue and so we need to take from history
+                    //Advantage of taking from the worklog is that you get created, updated and started date. This will help get data even if logged after sprint ends
+                    //Ref: https://community.atlassian.com/t5/Jira-Software-questions/JIRA-Server-7-4-REST-API-does-not-include-worklog-for-some/qaq-p/875383
+                        if (((createdate >= startdate || createdate >= activateddate) && (createdate <= enddate || createdate <= completedate))) {
+                            if (!retval.timespent[history.author.name])
+                                retval.timespent[history.author.name] = {
+                                    loggedbydisplayname: history.author.displayName,
+                                    name: history.author.name,
+                                    timeinseconds: 0
+                                };
+                            if (item.to != null)
+                                retval.timespent[history.author.name].timeinseconds += (parseInt(item.to) - parseInt(item.from != null ? item.from : 0));
+                        }
+                        break;
                 }
             }
         }
@@ -115,7 +146,7 @@ var filterticketsfields = function (issues, sprint) {
         if (!retval.storypointsatstartofsprint) {
             retval.storypointsatstartofsprint = { value: issue.fields.customfield_11462, changedate: new Date(issue.fields.created) };
         }
-        if ((retval.issuetype == "Story" || retval.issuetype == "Change Request") && retval.labels.indexOf("Scoped") < 0) {
+        if ((retval.issuetype == "Story" || retval.issuetype == "Change Request") && (retval.labels.indexOf("Scoped") < 0 && retval.labels.indexOf("scoped") < 0)) {
             retval.labels.push("NotScoped");
         }
         if (retval.labels.length == 0 &&
