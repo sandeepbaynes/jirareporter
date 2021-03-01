@@ -17,7 +17,17 @@ app.use(bodyParser.json());
 app.use(cookieparser());
 app.port = process.env.PORT || config.get('port');
 
+//Init UI files
+app.use('/css', express.static(`${__dirname}/ui/css`));
+app.use('/js', express.static(`${__dirname}/ui/js`));
+app.use('/fonts', express.static(`${__dirname}/ui/fonts`));
+app.use('/', express.static(`${__dirname}/ui`));
+
 this.cache = {};
+
+app.get('/', function (req, res) {
+    res.sendFile('index.html', { root: `${__dirname}/ui` });
+});
 
 app.get('/test', (req, res) => {
     testconnectionaction.execute(res, req.cookies.jirasession, req.query.ticket);
