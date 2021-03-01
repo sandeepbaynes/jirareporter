@@ -10,3 +10,7 @@ npm install
 npm run {{environment}}
 Example: npm run dev
 ```
+## Production dependencies
+```
+pm2
+```
