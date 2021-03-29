@@ -23,8 +23,9 @@
         In Sprint" includes general defects created during the duration of the
         sprint and added to it's scope.<br />
         <b>Tallying data:</b> Committed + Added Mid-Sprint + Stretch Goal =
-        Closed in Sprint + Incomplete. (Ignore Removed Mid-Sprint. This is never
-        added to the sprint tickets list)
+        Closed in Sprint + Incomplete. (Please note that if a ticket is closed within a sprint
+        and then removed, the value is added to the completed tickets. If not,
+        it is not considered in any calculation)
       </span>
     </div>
     <span class="text-6 text-h6"><b>Sprint completion</b></span>
