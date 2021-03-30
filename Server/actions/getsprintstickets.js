@@ -108,6 +108,9 @@ var filterticketsfields = function (issues, sprint) {
                             }
                             retval.storypointsatendofsprint = { value: !item['toString'] ? '' : item['toString'], changedate: createdate };
                         }
+                        else if (!!item['fromString'] && !retval.storypointsatstartofsprint) {
+                            retval.storypointsatstartofsprint = { value: item['fromString'], changedate: new Date(issue.fields.created) }
+                        }
                         break;
                     case "labels":
                         if (createdate <= enddate || createdate <= completedate) {
@@ -115,8 +118,8 @@ var filterticketsfields = function (issues, sprint) {
                         }
                         break;
                     case "timespent":   //This is supposed to come from issue.fields.worklog.worklogs[]. But Jira Rest API has an issue and so we need to take from history
-                    //Advantage of taking from the worklog is that you get created, updated and started date. This will help get data even if logged after sprint ends
-                    //Ref: https://community.atlassian.com/t5/Jira-Software-questions/JIRA-Server-7-4-REST-API-does-not-include-worklog-for-some/qaq-p/875383
+                        //Advantage of taking from the worklog is that you get created, updated and started date. This will help get data even if logged after sprint ends
+                        //Ref: https://community.atlassian.com/t5/Jira-Software-questions/JIRA-Server-7-4-REST-API-does-not-include-worklog-for-some/qaq-p/875383
                         if (((createdate >= startdate || createdate >= activateddate) && (createdate <= enddate || createdate <= completedate))) {
                             if (!retval.timespent[history.author.name])
                                 retval.timespent[history.author.name] = {

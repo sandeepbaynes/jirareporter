@@ -23,9 +23,9 @@
         In Sprint" includes general defects created during the duration of the
         sprint and added to it's scope.<br />
         <b>Tallying data:</b> Committed + Added Mid-Sprint + Stretch Goal =
-        Closed in Sprint + Incomplete. (Please note that if a ticket is closed within a sprint
-        and then removed, the value is added to the completed tickets. If not,
-        it is not considered in any calculation)
+        Closed in Sprint + Incomplete. (Please note that if a ticket is closed
+        within a sprint and then removed, the value is added to the completed
+        tickets. If not, it is not considered in any calculation)
       </span>
     </div>
     <span class="text-6 text-h6"><b>Sprint completion</b></span>
@@ -126,9 +126,9 @@ var getreportsdata = function (sprints, datadump) {
 };
 var getsprintstorypointforissue = function (issue) {
   return issue.storypointsatendofsprint != null
-    ? parseInt(issue.storypointsatendofsprint.value || 0)
+    ? parseFloat(issue.storypointsatendofsprint.value || 0)
     : issue.storypointsatstartofsprint != null
-    ? parseInt(issue.storypointsatstartofsprint.value || 0)
+    ? parseFloat(issue.storypointsatstartofsprint.value || 0)
     : 0;
 };
 var getcountandpoints = function (tickets) {
@@ -139,7 +139,7 @@ var getcountandpoints = function (tickets) {
       eos += getsprintstorypointforissue(issue);
       sos +=
         issue.storypointsatstartofsprint != null
-          ? parseInt(issue.storypointsatstartofsprint.value || 0)
+          ? parseFloat(issue.storypointsatstartofsprint.value || 0)
           : 0;
     });
     return {
@@ -376,7 +376,7 @@ var countissuetypeandlabelsinsprint = function (sprint) {
     issuetypecount[issue.issuetype].storypointsatstartofsprint =
       (issuetypecount[issue.issuetype].storypointsatstartofsprint || 0) +
       (issue.storypointsatstartofsprint != null
-        ? parseInt(issue.storypointsatstartofsprint.value || 0)
+        ? parseFloat(issue.storypointsatstartofsprint.value || 0)
         : 0);
     issuetypecount[issue.issuetype].storypointsatendofsprint =
       (issuetypecount[issue.issuetype].storypointsatendofsprint || 0) +
@@ -387,7 +387,7 @@ var countissuetypeandlabelsinsprint = function (sprint) {
         labelscount[label].storypointsatstartofsprint =
           (labelscount[label].storypointsatstartofsprint || 0) +
           (issue.storypointsatstartofsprint != null
-            ? parseInt(issue.storypointsatstartofsprint.value || 0)
+            ? parseFloat(issue.storypointsatstartofsprint.value || 0)
             : 0);
         labelscount[label].storypointsatendofsprint =
           (labelscount[label].storypointsatendofsprint || 0) +

@@ -325,13 +325,13 @@ export default {
         item.storypointsatstartofsprint &&
         item.storypointsatstartofsprint.value
       ) {
-        sos = parseInt(item.storypointsatstartofsprint.value);
+        sos = parseFloat(item.storypointsatstartofsprint.value);
       }
       if (
         item.storypointsatendofsprint &&
         item.storypointsatendofsprint.value
       ) {
-        eos = parseInt(item.storypointsatendofsprint.value);
+        eos = parseFloat(item.storypointsatendofsprint.value);
       }
       return (
         "" +
