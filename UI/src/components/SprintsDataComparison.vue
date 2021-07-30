@@ -112,10 +112,13 @@
         sprint and added to it's scope.<br />
       </span>
     </div>
+    <SprintStoryPointToHours :sprintsdata="sprintsdata">
+    </SprintStoryPointToHours>
   </div>
 </template>
 <script>
 import VueApexCharts from "vue-apexcharts";
+import SprintStoryPointToHours from "@/components/SprintStoryPointToHours.vue";
 
 var getreportsdata = function (sprints, datadump) {
   var retval = [];
@@ -556,6 +559,7 @@ var getdefaultradialchartoptions = function (formatter) {
 export default {
   components: {
     ApexCharts: VueApexCharts,
+    SprintStoryPointToHours: SprintStoryPointToHours,
   },
   data: () => {
     return {

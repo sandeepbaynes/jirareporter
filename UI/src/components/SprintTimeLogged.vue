@@ -1,6 +1,15 @@
 <template>
   <div>
-    <span class="text-1"> <b>Time spent in sprint in hours</b> (doesn't include time logged for sprint after the sprint has been closed) </span>
+    <span class="text-1">
+      <b>Time spent in sprint in hours</b> (doesn't include time logged for
+      sprint after the sprint has been closed)
+    </span>
+    <div>
+      <v-switch
+        v-model="filterclosedtickets"
+        label="Show only closed tickets"
+      ></v-switch>
+    </div>
     <v-chip-group v-model="loggeduserfilter" column multiple>
       <v-chip v-for="log in loggedusers" :key="log.name" filter outlined>
         {{ log.displayname }}
@@ -76,6 +85,15 @@ var getloggedusers = function (issues) {
   return retval;
 };
 
+var getclosedtickets = function (tickets, ignoreclosed) {
+  return ignoreclosed ? tickets.filter(function (issue) {
+    return (
+      issue.statusatendofsprint.value == "Closed" ||
+      issue.statusatendofsprint.value == "Cancelled"
+    );
+  }) : tickets;
+};
+
 export default {
   name: "SprintTimeLogged",
   props: {
@@ -88,6 +106,7 @@ export default {
       datadump: null,
       loggeduserfilter: [],
       loggedusers: [],
+      filterclosedtickets: false,
     };
   },
   methods: {
@@ -158,8 +177,8 @@ export default {
       if (this.datadump) {
         return getdatatablevalues(
           [
-            ...this.datadump.tickets,
-            ...this.datadump.ticketsaddedaftersprintstart,
+            ...getclosedtickets(this.datadump.tickets, this.filterclosedtickets),
+            ...getclosedtickets(this.datadump.ticketsaddedaftersprintstart, this.filterclosedtickets),
           ],
           this.loggedusers,
           this.loggeduserfilter
@@ -172,8 +191,8 @@ export default {
     if (this.$root.sprintsdatadump) {
       this.datadump = this.$root.sprintsdatadump[this.sprintname];
       this.loggedusers = getloggedusers([
-        ...this.datadump.tickets,
-        ...this.datadump.ticketsaddedaftersprintstart,
+        ...getclosedtickets(this.datadump.tickets, this.filterclosedtickets),
+        ...getclosedtickets(this.datadump.ticketsaddedaftersprintstart, this.filterclosedtickets),
       ]);
     }
   },
@@ -182,8 +201,8 @@ export default {
       if (!val && this.$root.sprintsdatadump) {
         this.datadump = this.$root.sprintsdatadump[this.sprintname];
         this.loggedusers = getloggedusers([
-          ...this.datadump.tickets,
-          ...this.datadump.ticketsaddedaftersprintstart,
+          ...getclosedtickets(this.datadump.tickets, this.filterclosedtickets),
+          ...getclosedtickets(this.datadump.ticketsaddedaftersprintstart, this.filterclosedtickets),
         ]);
       }
     },

@@ -38,7 +38,7 @@
         </v-list-item-icon>
         <v-list-item-title>Dashboard</v-list-item-title>
       </v-list-item>
-      <v-list-item to="/setupteams" link>
+      <!-- <v-list-item to="/setupteams" link>
         <v-list-item-icon>
           <v-icon>mdi-account-multiple</v-icon>
         </v-list-item-icon>
@@ -49,7 +49,7 @@
           <v-icon>mdi-application-settings</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Preferences</v-list-item-title>
-      </v-list-item>
+      </v-list-item> -->
     </v-list>
   </v-navigation-drawer>
 </template>

@@ -52,14 +52,14 @@ var filterticketsfields = function (issues, sprint) {
             issuetypeiconurl: issue.fields.issuetype.iconUrl,
             summary: issue.fields.summary,
             fixversion: issue.fields.fixversions,
-            priority: issue.fields.priority.name,
+            priority: issue.fields.priority != null ? issue.fields.priority.name : '',
             progress: issue.fields.progress,
             timespent: issue.fields.timespent,
             aggregateprogress: issue.fields.aggregateprogress,
             aggregatetimespent: issue.fields.aggregatetimespent,
             createddate: issue.fields.created,
-            reporter: issue.fields.reporter.name,
-            reporterdisplayname: issue.fields.reporter.displayname,
+            reporter: issue.fields.reporter != null ? issue.fields.reporter.name : '',
+            reporterdisplayname: issue.fields.reporter != null ? issue.fields.reporter.displayname : '',
             storypoints: issue.fields.customfield_11462,
             storypointsatstartofsprint: null,
             storypointsatendofsprint: null,
@@ -80,7 +80,7 @@ var filterticketsfields = function (issues, sprint) {
                         }
                         else if (createdate <= enddate || createdate <= completedate) {
                             if (!assigneeatstartofsprint) {
-                                assigneeatstartofsprint = { value: "assignee", changedate: new Date(issue.fields.created), author: issue.fields.creator.name, authordisplayname: issue.fields.creator.displayName };
+                                assigneeatstartofsprint = { value: "assignee", changedate: new Date(issue.fields.created), author: issue.fields.creator != null ? issue.fields.creator.name : '', authordisplayname: issue.fields.creator != null ? issue.fields.creator.displayName : '' };
                             }
                             assigneeatendofsprint = assigneeatstartofsprint = { value: "assignee", changedate: createdate, author: history.author.name, authordisplayname: history.author.displayName, assigneeattime: historyassignee };
                             retval.statushistory.push(assigneeatendofsprint);
@@ -92,7 +92,7 @@ var filterticketsfields = function (issues, sprint) {
                         }
                         else if (createdate <= enddate || createdate <= completedate) {
                             if (!retval.statusatstartofsprint) {
-                                retval.statusatstartofsprint = { value: item['fromString'], changedate: new Date(issue.fields.created), author: issue.fields.creator.name, authordisplayname: issue.fields.creator.displayName };
+                                retval.statusatstartofsprint = { value: item['fromString'], changedate: new Date(issue.fields.created), author: issue.fields.creator != null ? issue.fields.creator.name : '', authordisplayname: issue.fields.creator != null ? issue.fields.creator.displayName : '' };
                             }
                             retval.statusatendofsprint = statusatstartofsrpint = { value: item['toString'], changedate: createdate, author: history.author.name, authordisplayname: history.author.displayName, assigneeattime: historyassignee };
                             retval.statushistory.push(retval.statusatendofsprint);

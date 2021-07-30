@@ -10,6 +10,7 @@ Vue.config.productionTip = false
 Vue.use(VueApexCharts);
 
 var apiurl = "http://localhost:3000";
+//var apiurl = '';
 
 new Vue({
   router,

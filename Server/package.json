@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=dev nodemon server.js --ignore ./scripts/ -unhandled-rejections=strict",
-    "prod": "NODE_ENV=prod nodemon server.js --ignore ./scripts/ -unhandled-rejections=strict",
+    "prod": "NODE_ENV=prod node server.js",
     "prod_runasservice": "NODE_ENV=prod pm2 start server.js --name \"jirareporter\"",
     "prod_runasservice_withenvrefresh": "NODE_ENV=prod pm2 restart jirareporter --update-env",
     "prod_stopservice": "pm2 stop jirareporter",
